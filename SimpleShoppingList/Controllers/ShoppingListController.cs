@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,9 +11,14 @@ namespace SimpleShoppingList.Controllers
 {
     public class ShoppingListController : ApiController
     {
-        List<ShoppingList> shoppingLists=new List<ShoppingList>()
+        public static List<ShoppingList> shoppingLists=new List<ShoppingList>()
         {
-            new ShoppingList(){Id=0, Name = "Grocceries"},
+            new ShoppingList(){Id=0, Name = "Grocceries", Items =
+            {
+                    new Item() { Name = "Milk" },
+                    new Item() { Name = "Cornflakes"},
+                    new Item() { Name = "Strawberries"},
+            }},
             new ShoppingList(){Id=1, Name = "Hardware Store"},
         };
 
@@ -34,8 +40,12 @@ namespace SimpleShoppingList.Controllers
         }
 
         // POST api/<controller>
-        public void Post([FromBody]string value)
+        public IEnumerable Post([FromBody]ShoppingList newList)
         {
+            newList.Id = shoppingLists.Count;
+            shoppingLists.Add(newList);
+
+            return shoppingLists;
         }
 
         // PUT api/<controller>/5

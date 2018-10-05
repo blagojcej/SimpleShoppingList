@@ -7,8 +7,20 @@ function createShoppingList() {
     currentList.items = new Array();
 
     // Web Service Call
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "api/ShoppingList/",
+        data: currentList,
+        success: function (result) {
+            showShoppingList();
+        }//,
+        //error: function() {
+        //    console.error("Something bad happened! :(");
+        //}
+    });
 
-    showShoppingList();
+    //showShoppingList();
 }
 
 function showShoppingList() {
@@ -33,12 +45,28 @@ function showShoppingList() {
 function addItem() {
     var newItem = {};
     newItem.name = $("#newItemName").val();
+    newItem.shoppingListId = currentList.id;
 
     //Put new item into array of items
-    currentList.items.push(newItem);
+    //currentList.items.push(newItem);
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "api/Item/",
+        data: newItem,
+        success: function (result) {
+            currentList = result;
+            drawItems();
+            $("#newItemName").val();
+        }//,
+        //error: function() {
+        //    console.error("Something bad happened! :(");
+        //}
+    });
 
     console.log(currentList);
-    drawItems();
+    //drawItems();
 
     $("#newItemName").val("");
 }
@@ -75,6 +103,23 @@ function checkItem(index) {
 }
 
 function getShoppingListById(id) {
+
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        url: "api/ShoppingList/" + id,
+        success: function(result) {
+            currentList = result;
+            showShoppingList();
+            drawItems();
+        }//,
+        //error: function() {
+        //    console.error("Something bad happened! :(");
+        //}
+    });
+
+    //Mocking code
+    /*
     console.log(id);
 
     currentList.name = "Mock Shopping List";
@@ -92,6 +137,7 @@ function getShoppingListById(id) {
 
     showShoppingList();
     drawItems();
+    */
 }
 
 $(document).ready(function () {
