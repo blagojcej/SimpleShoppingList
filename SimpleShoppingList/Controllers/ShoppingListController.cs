@@ -11,15 +11,18 @@ namespace SimpleShoppingList.Controllers
 {
     public class ShoppingListController : ApiController
     {
-        public static List<ShoppingList> shoppingLists=new List<ShoppingList>()
+        public static List<ShoppingList> shoppingLists = new List<ShoppingList>()
         {
-            new ShoppingList(){Id=0, Name = "Grocceries", Items =
+            new ShoppingList()
             {
-                    new Item() { Name = "Milk" },
-                    new Item() { Name = "Cornflakes"},
-                    new Item() { Name = "Strawberries"},
-            }},
-            new ShoppingList(){Id=1, Name = "Hardware Store"},
+                Id = 0, Name = "Grocceries", Items =
+                {
+                    new Item() {Id = 0, Name = "Milk", ShoppingListId = 0},
+                    new Item() {Id = 1, Name = "Cornflakes", ShoppingListId = 0},
+                    new Item() {Id = 2, Name = "Strawberries", ShoppingListId = 0},
+                }
+            },
+            new ShoppingList() {Id = 1, Name = "Hardware Store"},
         };
 
         // GET api/<controller>
