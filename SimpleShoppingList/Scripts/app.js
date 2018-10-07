@@ -1,6 +1,8 @@
 ﻿var currentList = {};
 
 function createShoppingList() {
+    //Only for testing purpose, id is integer
+    //currentList.id = "test";
     currentList.name = $("#shoppingListName").val();
 
     //Initialize items array of the current shopping list object
@@ -10,10 +12,17 @@ function createShoppingList() {
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: "api/ShoppingList/",
+        //Web service with Mocking list without database
+        //url: "api/ShoppingList/",
+        //Web service using database
+        url: "api/ShoppingListsEF/",
         data: currentList,
         success: function (result) {
+            //Web service using database
+            currentList = result;
             showShoppingList();
+            //Add history or state of the application
+            history.pushState({ id: result.id }, result.name, "?id=" + result.id);
         }//,
         //error: function() {
         //    console.error("Something bad happened! :(");
@@ -34,7 +43,9 @@ function showShoppingList() {
     $("#createListDiv").hide();
     $("#shoppingListDiv").show();
 
+    $("#newItemName").val("");
     $("#newItemName").focus();
+    $("#newItemName").unbind("keyup");
     $("#newItemName").keyup(function (event) {
         if (event.keyCode === 13) {
             addItem();
@@ -53,7 +64,10 @@ function addItem() {
     $.ajax({
         type: "POST",
         dataType: "json",
-        url: "api/Item/",
+        //Web service with Mocking list without database
+        //url: "api/Item/",
+        //Web service using database
+        url: "api/ItemsEF/",
         data: newItem,
         success: function (result) {
             currentList = result;
@@ -100,7 +114,10 @@ function deleteItem(itemId) {
     $.ajax({
         type: "DELETE",
         dataType: "json",
-        url: "api/Item/" + itemId,
+        //Web service with Mocking list without database
+        //url: "api/Item/" + itemId,
+        //Web service using database
+        url: "api/ItemsEF/" + itemId,
         success: function (result) {
             currentList = result;
             drawItems();
@@ -135,10 +152,16 @@ function checkItem(itemId) {
     $.ajax({
         type: "PUT",
         dataType: "json",
-        url: "api/Item/" + itemId,
+        //Web service with Mocking list without database
+        //url: "api/Item/" + itemId,
+        //Web service using database
+        url: "api/ItemsEF/" + itemId,
         data: changedItem,
         success: function (result) {
-            currentList = result;
+            //Web service with Mocking list without database
+            //currentList = result;
+            //Web service using database
+            changedItem = result;
             drawItems();
         }//,
         //error: function() {
@@ -152,7 +175,10 @@ function getShoppingListById(id) {
     $.ajax({
         type: "GET",
         dataType: "json",
-        url: "api/ShoppingList/" + id,
+        //Web service with Mocking list without database
+        //url: "api/ShoppingList/" + id,
+        //Web service using database
+        url: "api/ShoppingListsEF/" + id,
         success: function(result) {
             currentList = result;
             showShoppingList();
@@ -185,10 +211,27 @@ function getShoppingListById(id) {
     */
 }
 
+function hideShoppingList() {
+    $("#createListDiv").show();
+    $("#shoppingListDiv").hide();
+
+    $("#shoppingListName").val("");
+    $("#shoppingListName").focus();
+    $("#shoppingListName").keyup(function (event) {
+        if (event.keyCode === 13) {
+            createShoppingList();
+        }
+    });
+}
+
 $(document).ready(function () {
     console.info("ready");
 
+    hideShoppingList();
+
+    $("#shoppingListName").val("");
     $("#shoppingListName").focus();
+    $("#shoppingListName").unbind("keyup");
     $("#shoppingListName").keyup(function(event) {
         if (event.keyCode === 13) {
             createShoppingList();
@@ -202,4 +245,13 @@ $(document).ready(function () {
         //We are adding 4 at the end because we have 4 characters in idIndex
         getShoppingListById(pageUrl.substring(idIndex + 4));
     }
+
+    window.onpopstate = function(event) {
+        if (event.state === null) {
+            //hide shopping list
+            hideShoppingList();
+        } else {
+            getShoppingListById(event.state.id);
+        }
+    };
 });
